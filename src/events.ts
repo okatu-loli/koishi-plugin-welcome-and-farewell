@@ -36,7 +36,7 @@ export function registerEvents(ctx: Context, config: Config) {
   });
 
   ctx.on('guild-member-request', async (session) => {
-    logMessage(config, 'guild-request 事件触发');
+    logMessage(config, 'guild-member-request 事件触发');
     const guildConfig = await getValidGroupConfig(ctx, session.guildId, defaultConfig);
     logMessage(config, `群组配置: ${JSON.stringify(guildConfig)}`);
     if (guildConfig.approvalEnabled) {

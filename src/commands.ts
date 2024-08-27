@@ -1,10 +1,9 @@
 import { Context } from 'koishi';
-import {Config} from "./index";
-import {saveGroupConfig, getValidGroupConfig} from "./database";
+import { Config } from './index';
+import { getGroupConfig, saveGroupConfig } from './database';
+import { logMessage } from './utils';
 
-// 注册命令
 export function registerCommands(ctx: Context, config: Config) {
-  // 获取默认配置
   const defaultConfig = {
     guildId: 'default',
     welcomeMessage: config.defaultWelcomeMessage,
@@ -18,7 +17,7 @@ export function registerCommands(ctx: Context, config: Config) {
     .userFields(['authority'])
     .action(async ({ session }, guildId, message) => {
       if (session.user.authority < 3) return '你没有权限使用此命令。';
-      const existingConfig = await getValidGroupConfig(ctx, guildId, defaultConfig);
+      const existingConfig = await getGroupConfig(ctx, guildId) || { guildId };
       existingConfig.welcomeMessage = message;
       existingConfig.welcomeEnabled = existingConfig.welcomeEnabled ?? true;
       await saveGroupConfig(ctx, existingConfig);
@@ -29,7 +28,7 @@ export function registerCommands(ctx: Context, config: Config) {
     .userFields(['authority'])
     .action(async ({ session }, guildId, message) => {
       if (session.user.authority < 3) return '你没有权限使用此命令。';
-      const existingConfig = await getValidGroupConfig(ctx, guildId, defaultConfig);
+      const existingConfig = await getGroupConfig(ctx, guildId) || { guildId };
       existingConfig.farewellMessage = message;
       existingConfig.farewellEnabled = existingConfig.farewellEnabled ?? true;
       await saveGroupConfig(ctx, existingConfig);
@@ -40,7 +39,7 @@ export function registerCommands(ctx: Context, config: Config) {
     .userFields(['authority'])
     .action(async ({ session }, guildId, enabled) => {
       if (session.user.authority < 3) return '你没有权限使用此命令。';
-      const existingConfig = await getValidGroupConfig(ctx, guildId, defaultConfig);
+      const existingConfig = await getGroupConfig(ctx, guildId) || { guildId };
       existingConfig.welcomeEnabled = enabled;
       await saveGroupConfig(ctx, existingConfig);
       return `已${enabled ? '启用' : '禁用'}群组 ${guildId} 的入群欢迎消息。`;
@@ -50,7 +49,7 @@ export function registerCommands(ctx: Context, config: Config) {
     .userFields(['authority'])
     .action(async ({ session }, guildId, enabled) => {
       if (session.user.authority < 3) return '你没有权限使用此命令。';
-      const existingConfig = await getValidGroupConfig(ctx, guildId, defaultConfig);
+      const existingConfig = await getGroupConfig(ctx, guildId) || { guildId };
       existingConfig.farewellEnabled = enabled;
       await saveGroupConfig(ctx, existingConfig);
       return `已${enabled ? '启用' : '禁用'}群组 ${guildId} 的退群告别消息。`;
@@ -60,7 +59,7 @@ export function registerCommands(ctx: Context, config: Config) {
     .userFields(['authority'])
     .action(async ({ session }, guildId, enabled) => {
       if (session.user.authority < 3) return '你没有权限使用此命令。';
-      const existingConfig = await getValidGroupConfig(ctx, guildId, defaultConfig);
+      const existingConfig = await getGroupConfig(ctx, guildId) || { guildId };
       existingConfig.approvalEnabled = enabled;
       await saveGroupConfig(ctx, existingConfig);
       return `已${enabled ? '启用' : '禁用'}群组 ${guildId} 的入群审批功能。`;
@@ -70,7 +69,7 @@ export function registerCommands(ctx: Context, config: Config) {
     .userFields(['authority'])
     .action(async ({ session }, messageId, approve) => {
       if (session.user.authority < 3) return '你没有权限使用此命令。';
-      await session.bot.handleGuildMemberRequest(messageId, true, '自动批准');
+      await session.bot.handleGuildMemberRequest(messageId, approve, approve ? '自动批准' : '自动拒绝');
       return `已${approve ? '同意' : '拒绝'}入群请求，消息 ID: ${messageId}`;
     });
 

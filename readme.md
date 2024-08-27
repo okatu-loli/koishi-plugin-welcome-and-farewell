@@ -4,11 +4,22 @@
 
 A plugin to send welcome and farewell messages when members join or leave the group
 
+## Welcome and Farewell 插件使用文档
+
 ### 插件名称
 **Welcome and Farewell**
 
 ### 插件描述
 该插件用于管理群组的入群欢迎消息、退群告别消息和入群审批功能。管理员可以为每个群组自定义欢迎和告别消息，并选择是否启用这些消息和入群审批功能。
+
+### 注意事项
+使用前请务必用以下指令配置一遍：
+- 启用或禁用入群欢迎消息
+- 启用或禁用退群告别消息
+- 启用或禁用入群审批功能
+- 添加管理员
+
+否则插件可能不会生效或者出现意料之外的问题。
 
 ### 配置项
 - `defaultWelcomeMessage`：默认的入群欢迎消息。可以使用占位符 `{userId}` 来动态插入用户 ID。
@@ -20,8 +31,8 @@ A plugin to send welcome and farewell messages when members join or leave the gr
 ### 示例配置
 ```json
 {
-  "defaultWelcomeMessage": "欢迎 [@{userId}] 入群！",
-  "defaultFarewellMessage": "成员 [@{userId}] 已经退出群聊。",
+  "defaultWelcomeMessage": "欢迎 {userId} 入群！",
+  "defaultFarewellMessage": "成员 {userId} 已经退出群聊。",
   "adminUserIds": ["123456789", "987654321"],
   "defaultApproval": true,
   "verboseLogging": false
@@ -33,13 +44,13 @@ A plugin to send welcome and farewell messages when members join or leave the gr
 #### 设置入群欢迎消息
 `setWelcomeMessage <guildId:string> <message:text>`
 - 用途：设置指定群组的入群欢迎消息。
-- 示例：`/setWelcomeMessage 123456 "欢迎 [@{userId}] 入群！"`
+- 示例：`/setWelcomeMessage 123456 "欢迎 {userId} 入群！"`
 - 说明：`guildId` 是群组的 ID，`message` 是欢迎消息。
 
 #### 设置退群告别消息
 `setFarewellMessage <guildId:string> <message:text>`
 - 用途：设置指定群组的退群告别消息。
-- 示例：`/setFarewellMessage 123456 "成员 [@{userId}] 已经退出群聊。"`
+- 示例：`/setFarewellMessage 123456 "成员 {userId} 已经退出群聊。"`
 - 说明：`guildId` 是群组的 ID，`message` 是告别消息。
 
 #### 启用或禁用入群欢迎消息
@@ -60,6 +71,24 @@ A plugin to send welcome and farewell messages when members join or leave the gr
 - 示例：`/toggleApproval 123456 true`
 - 说明：`guildId` 是群组的 ID，`enabled` 是布尔值，`true` 表示启用，`false` 表示禁用。
 
+#### 同意或拒绝入群请求
+`approveJoinRequest <messageId:string> <approve:boolean>`
+- 用途：同意或拒绝入群请求。
+- 示例：`/approveJoinRequest 123456 true`
+- 说明：`messageId` 是入群请求的消息 ID，`approve` 是布尔值，`true` 表示同意，`false` 表示拒绝。
+
+#### 添加管理员
+`addAdmin <guildId:string> <userId:string>`
+- 用途：为指定群组添加管理员。
+- 示例：`/addAdmin 123456 987654321`
+- 说明：`guildId` 是群组的 ID，`userId` 是管理员的用户 ID。
+
+#### 移除管理员
+`removeAdmin <guildId:string> <userId:string>`
+- 用途：从指定群组移除管理员。
+- 示例：`/removeAdmin 123456 987654321`
+- 说明：`guildId` 是群组的 ID，`userId` 是管理员的用户 ID。
+
 ### 权限要求
 - 只有权限等级高于或等于 3 的用户才能使用这些指令。
 
@@ -71,15 +100,15 @@ A plugin to send welcome and farewell messages when members join or leave the gr
 
 #### 设置入群欢迎消息
 ```
-/setWelcomeMessage 123456 "欢迎 [@{userId}] 入群！"
+/setWelcomeMessage 123456 "欢迎 {userId} 入群！"
 ```
-上述命令会为群组 ID 为 123456 的群设置入群欢迎消息为 "欢迎 [@{userId}] 入群！"。
+上述命令会为群组 ID 为 123456 的群设置入群欢迎消息为 "欢迎 {userId} 入群！"。
 
 #### 设置退群告别消息
 ```
-/setFarewellMessage 123456 "成员 [@{userId}] 已经退出群聊。"
+/setFarewellMessage 123456 "成员 {userId} 已经退出群聊。"
 ```
-上述命令会为群组 ID 为 123456 的群设置退群告别消息为 "成员 [@{userId}] 已经退出群聊。"。
+上述命令会为群组 ID 为 123456 的群设置退群告别消息为 "成员 {userId} 已经退出群聊。"。
 
 #### 启用入群欢迎消息
 ```
@@ -98,3 +127,9 @@ A plugin to send welcome and farewell messages when members join or leave the gr
 /toggleApproval 123456 true
 ```
 上述命令会启用群组 ID 为 123456 的入群审批功能。
+
+#### 同意入群请求
+```
+/approveJoinRequest 123456 true
+```
+上述命令会同意入群请求，消息 ID 为 123456。
